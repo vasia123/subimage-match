@@ -18,11 +18,20 @@ interface outputCoords {
 
 
 export default function subImageMatch(
-    img: inputImage, 
+    img: inputImage,
     subImg: inputImage, optionsParam?: typeof defaultOptions): boolean | outputCoords {
 
     const { data: imgData, width: imgWidth, height: imgHeight } = img;
     const { data: subImgData, width: subImgWidth } = subImg;
+
+    const imgChannels = getChannelsCount(img)
+    const subImgChannels = getChannelsCount(subImg)
+
+    console.log('imgData', imgData.length)
+    console.log('imgWidth', imgWidth, 'imgHeight', imgHeight)
+    console.log('subImgData', subImgData.length)
+    console.log('subImgWidth', subImgWidth)
+
 
     if (!isPixelData(imgData) || !isPixelData(subImgData)) {
         throw new Error("Image data: Uint8Array, Uint8ClampedArray or Buffer expected.");
@@ -30,6 +39,10 @@ export default function subImageMatch(
     if (imgWidth < subImgWidth) {
         throw new Error("Subimage is larger than base image");
     }
+    if (imgChannels < subImgChannels) {
+        throw new Error("Subimage channels count not equal to image channels count");
+    }
+
     const options = Object.assign({}, defaultOptions, optionsParam);
     const maxDelta = 35215 * options.threshold * options.threshold;
 
@@ -37,14 +50,14 @@ export default function subImageMatch(
     let matchingTopRowStartX = 0;
     let matchingTopRowStartY = 0;
 
-    for (let y = 0; y < imgHeight; y++) {
+    for (let y = 0; y < imgHeight; y += 1) {
 
         let matchingTopRowX = 0; // restart finding top row mode when we hit a new row in the main img
-        for (let x = 0; x < imgWidth; x++) {
+        for (let x = 0; x < imgWidth; x += 1) {
 
-            const imgPos = posFromCoordinates(y, x, imgWidth);
+            const imgPos = posFromCoordinates(y, x, imgWidth, imgChannels);
 
-            const matches = pixelMatches(imgData, subImgData, imgPos, subImgPos, maxDelta);
+            const matches = pixelMatches(imgData, subImgData, imgPos, subImgPos, maxDelta, imgChannels);
             if (matches) {
 
                 if (matchingTopRowX === 0) {
@@ -69,10 +82,13 @@ export default function subImageMatch(
     return false;
 }
 
-export function subImageMatchOnCoordinates(
+function subImageMatchOnCoordinates(
     img: inputImage, subImg: inputImage, matchY: number, matchX: number, maxDelta: number) {
+
     const { data: imgData, width: imgWidth } = img;
     const { data: subImgData, width: subImgWidth, height: subImgHeight } = subImg;
+    const imgChannels = getChannelsCount(img)
+
     let subImgX = 0;
     let subImgY = 0;
     for (let imgY = matchY; imgY < (matchY + subImgHeight); imgY++) {
@@ -80,9 +96,9 @@ export function subImageMatchOnCoordinates(
 
         for (let imgX = matchX; imgX < (matchX + subImgWidth); imgX++) {
 
-            const imgPos = posFromCoordinates(imgY, imgX, imgWidth);
-            const subImgPos = posFromCoordinates(subImgY, subImgX, subImgWidth);
-            const matches = pixelMatches(imgData, subImgData, imgPos, subImgPos, maxDelta, imgY === 5);
+            const imgPos = posFromCoordinates(imgY, imgX, imgWidth, imgChannels);
+            const subImgPos = posFromCoordinates(subImgY, subImgX, subImgWidth, imgChannels);
+            const matches = pixelMatches(imgData, subImgData, imgPos, subImgPos, maxDelta, imgChannels, imgY === 5);
             if (!matches) {
                 return false;
             }
@@ -93,10 +109,19 @@ export function subImageMatchOnCoordinates(
     return true;
 }
 
-function isPixelData(arr: Buffer | Uint8Array | Uint8ClampedArray) {
-    return Buffer.isBuffer(arr) || arr.constructor === Uint8Array ||  arr.constructor === Uint8ClampedArray;
+function getChannelsCount(img: inputImage): number {
+    let channelsCount = 1;
+    if (img.data.length !== img.width * img.height
+        && img.data.length % (img.width * img.height) === 0) {
+        channelsCount = Math.round(img.data.length / (img.width * img.height))
+    }
+    return channelsCount
 }
 
-function posFromCoordinates(y: number, x: number, width: number) {
-    return (y * width + x) * 4;
+function isPixelData(arr: Buffer | Uint8Array | Uint8ClampedArray) {
+    return Buffer.isBuffer(arr) || arr.constructor === Uint8Array || arr.constructor === Uint8ClampedArray;
+}
+
+function posFromCoordinates(y: number, x: number, width: number, channels: number) {
+    return (y * width + x) * channels;
 }

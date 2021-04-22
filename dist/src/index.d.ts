@@ -12,5 +12,4 @@ interface outputCoords {
     y: number;
 }
 export default function subImageMatch(img: inputImage, subImg: inputImage, optionsParam?: typeof defaultOptions): boolean | outputCoords;
-export declare function subImageMatchOnCoordinates(img: inputImage, subImg: inputImage, matchY: number, matchX: number, maxDelta: number): boolean;
 export {};

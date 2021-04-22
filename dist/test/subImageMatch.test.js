@@ -49,7 +49,7 @@ describe('matches-subimage', function () {
         const img1 = readImage(getTestImgPath("1"));
         const img2 = readImage(getTestImgPath("1"));
         const matches = index_1.default(img1, img2);
-        chai_1.expect(matches).to.equal(true);
+        chai_1.expect(matches).to.deep.equal({ x: 0, y: 0 });
     });
     it("Doesn't match on 2 different images", () => {
         const img1 = readImage(getTestImgPath("1-sub"));
@@ -61,36 +61,30 @@ describe('matches-subimage', function () {
         const img = readImage(getTestImgPath("1"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = index_1.default(img, subImg);
-        chai_1.expect(matches).to.equal(true);
+        chai_1.expect(matches).to.deep.equal({ x: 3, y: 2 });
     });
     it("Find sub-image match within image when first row matches in multiple places", () => {
         const img = readImage(getTestImgPath("1b"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = index_1.default(img, subImg);
-        chai_1.expect(matches).to.equal(true);
+        chai_1.expect(matches).to.deep.equal({ x: 3, y: 2 });
     });
     it("Find sub-image match within image when first row matches in multiple places 2", () => {
         const img = readImage(getTestImgPath("1c"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = index_1.default(img, subImg);
-        chai_1.expect(matches).to.equal(true);
+        chai_1.expect(matches).to.deep.equal({ x: 3, y: 2 });
     });
     it("Find sub-image match within image when first row matches in multiple places 3", () => {
         const img = readImage(getTestImgPath("1d"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = index_1.default(img, subImg);
-        chai_1.expect(matches).to.equal(true);
+        chai_1.expect(matches).to.deep.equal({ x: 3, y: 2 });
     });
     it("Find sub-image on big image", () => {
         const img = readImage(getTestImgPath("3"));
         const subImg = readImage(getTestImgPath("3-sub"));
         const matches = index_1.default(img, subImg);
-        chai_1.expect(matches).to.equal(true);
-    });
-    it("Find sub-image on very big image", () => {
-        const img = readImage(getTestImgPath("4"));
-        const subImg = readImage(getTestImgPath("4-sub"));
-        const matches = index_1.default(img, subImg);
-        chai_1.expect(matches).to.equal(true);
+        chai_1.expect(matches).to.deep.equal({ x: 924, y: 155 });
     });
 });
