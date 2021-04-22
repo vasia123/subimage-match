@@ -30,10 +30,6 @@ function subImageMatch(img, subImg, optionsParam) {
     const { data: subImgData, width: subImgWidth } = subImg;
     const imgChannels = getChannelsCount(img);
     const subImgChannels = getChannelsCount(subImg);
-    console.log('imgData', imgData.length);
-    console.log('imgWidth', imgWidth, 'imgHeight', imgHeight);
-    console.log('subImgData', subImgData.length);
-    console.log('subImgWidth', subImgWidth);
     if (!isPixelData(imgData) || !isPixelData(subImgData)) {
         throw new Error('Image data: Uint8Array, Uint8ClampedArray or Buffer expected.');
     }
@@ -62,7 +58,7 @@ function subImageMatch(img, subImg, optionsParam) {
                 matchingTopRowX++;
                 if (matchingTopRowX === subImgWidth) {
                     if (subImageMatchOnCoordinates(img, subImg, matchingTopRowStartY, matchingTopRowStartX, maxDelta)) {
-                        return { x: matchingTopRowStartX, y: matchingTopRowStartY };
+                        return { x: matchingTopRowStartX, y: matchingTopRowStartY, found: true };
                     }
                     x = matchingTopRowStartX; // put our search position x back to where the matching row began
                     matchingTopRowX = 0;
@@ -73,7 +69,7 @@ function subImageMatch(img, subImg, optionsParam) {
             }
         }
     }
-    return false;
+    return { x: -1, y: -1, found: false };
 }
 exports.default = subImageMatch;
 function subImageMatchOnCoordinates(img, subImg, matchY, matchX, maxDelta) {

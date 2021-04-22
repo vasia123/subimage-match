@@ -15,6 +15,7 @@ export interface inputImage {
 export interface outputCoords {
   x: number
   y: number
+  found: boolean
 }
 
 function getChannelsCount(img: inputImage): number {
@@ -39,7 +40,7 @@ function posFromCoordinates(y: number, x: number, width: number, channels: numbe
 export default function subImageMatch(
   img: inputImage,
   subImg: inputImage, optionsParam?: typeof defaultOptions,
-): boolean | outputCoords {
+): outputCoords {
   const { data: imgData, width: imgWidth, height: imgHeight } = img;
   const { data: subImgData, width: subImgWidth } = subImg;
 
@@ -79,7 +80,7 @@ export default function subImageMatch(
         matchingTopRowX++;
         if (matchingTopRowX === subImgWidth) {
           if (subImageMatchOnCoordinates(img, subImg, matchingTopRowStartY, matchingTopRowStartX, maxDelta)) {
-            return { x: matchingTopRowStartX, y: matchingTopRowStartY };
+            return { x: matchingTopRowStartX, y: matchingTopRowStartY, found: true };
           }
           x = matchingTopRowStartX; // put our search position x back to where the matching row began
           matchingTopRowX = 0;
@@ -89,7 +90,7 @@ export default function subImageMatch(
       }
     }
   }
-  return false;
+  return { x: -1, y: -1, found: false };
 }
 
 function subImageMatchOnCoordinates(

@@ -51,49 +51,49 @@ describe('matches-subimage', function () {
         const img1 = readImage(getTestImgPath("1"));
         const img2 = readImage(getTestImgPath("1"));
         const matches = subImageMatch(img1, img2);
-        expect(matches).to.deep.equal({ x: 0, y: 0 });
+        expect(matches).to.deep.equal({ x: 0, y: 0, found: true });
     });
 
     it("Doesn't match on 2 different images", () => {
         const img1 = readImage(getTestImgPath("1-sub"));
         const img2 = readImage(getTestImgPath("2"));
         const matches = subImageMatch(img1, img2);
-        expect(matches).to.equal(false);
+        expect(matches).to.deep.equal({ x: -1, y: -1, found: false });
     });
 
     it("Find sub-image match within image", () => {
         const img = readImage(getTestImgPath("1"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = subImageMatch(img, subImg);
-        expect(matches).to.deep.equal({ x: 3, y: 2 });
+        expect(matches).to.deep.equal({ x: 3, y: 2, found: true });
     });
 
     it("Find sub-image match within image when first row matches in multiple places", () => {
         const img = readImage(getTestImgPath("1b"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = subImageMatch(img, subImg);
-        expect(matches).to.deep.equal({ x: 3, y: 2 });
+        expect(matches).to.deep.equal({ x: 3, y: 2, found: true });
     });
 
     it("Find sub-image match within image when first row matches in multiple places 2", () => {
         const img = readImage(getTestImgPath("1c"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = subImageMatch(img, subImg);
-        expect(matches).to.deep.equal({ x: 3, y: 2 });
+        expect(matches).to.deep.equal({ x: 3, y: 2, found: true });
     });
 
     it("Find sub-image match within image when first row matches in multiple places 3", () => {
         const img = readImage(getTestImgPath("1d"));
         const subImg = readImage(getTestImgPath("1-sub"));
         const matches = subImageMatch(img, subImg);
-        expect(matches).to.deep.equal({ x: 3, y: 2 });
+        expect(matches).to.deep.equal({ x: 3, y: 2, found: true });
     });
 
     it("Find sub-image on big image", () => {
         const img = readImage(getTestImgPath("3"));
         const subImg = readImage(getTestImgPath("3-sub"));
         const matches = subImageMatch(img, subImg);
-        expect(matches).to.deep.equal({ x: 924, y: 155 });
+        expect(matches).to.deep.equal({ x: 924, y: 155, found: true });
     });
 
 });

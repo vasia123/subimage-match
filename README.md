@@ -25,7 +25,8 @@ yarn add subimage-match
 - `options` is an object literal with only one property currently:
     - `threshold` — Matching threshold, ranges from `0` to `1`. Smaller values make the comparison more sensitive. `0.1` by default.
 
-Returns `false` if no match has been found, or object with found coordinates `{x: number, y: number}`
+If success - return object `{x: number, y: number, found: true}`.
+If no match has been found, return `{x: -1, y: -1, found: false}`
 
 ## Example usage
 

@@ -10,6 +10,7 @@ export interface inputImage {
 export interface outputCoords {
     x: number;
     y: number;
+    found: boolean;
 }
-export default function subImageMatch(img: inputImage, subImg: inputImage, optionsParam?: typeof defaultOptions): boolean | outputCoords;
+export default function subImageMatch(img: inputImage, subImg: inputImage, optionsParam?: typeof defaultOptions): outputCoords;
 export {};
