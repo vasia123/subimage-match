@@ -2,12 +2,12 @@
 declare const defaultOptions: {
     threshold: number;
 };
-interface inputImage {
+export interface inputImage {
     data: Buffer | Uint8Array | Uint8ClampedArray;
     width: number;
     height: number;
 }
-interface outputCoords {
+export interface outputCoords {
     x: number;
     y: number;
 }

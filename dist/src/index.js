@@ -6,8 +6,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const delta_1 = __importDefault(require("./delta"));
 const defaultOptions = {
     threshold: 0.1, // matching threshold (0 to 1); smaller is more sensitive
-    // includeAA: false,       // whether to skip anti-aliasing detection. WIP (see pixelmatch package)
+    // includeAA: false,
+    // whether to skip anti-aliasing detection. WIP (see pixelmatch package)
 };
+function getChannelsCount(img) {
+    let channelsCount = 1;
+    if (img.data.length !== img.width * img.height
+        && img.data.length % (img.width * img.height) === 0) {
+        channelsCount = Math.round(img.data.length / (img.width * img.height));
+    }
+    return channelsCount;
+}
+function isPixelData(arr) {
+    return Buffer.isBuffer(arr)
+        || arr.constructor === Uint8Array
+        || arr.constructor === Uint8ClampedArray;
+}
+function posFromCoordinates(y, x, width, channels) {
+    return (y * width + x) * channels;
+}
 function subImageMatch(img, subImg, optionsParam) {
     const { data: imgData, width: imgWidth, height: imgHeight } = img;
     const { data: subImgData, width: subImgWidth } = subImg;
@@ -18,17 +35,17 @@ function subImageMatch(img, subImg, optionsParam) {
     console.log('subImgData', subImgData.length);
     console.log('subImgWidth', subImgWidth);
     if (!isPixelData(imgData) || !isPixelData(subImgData)) {
-        throw new Error("Image data: Uint8Array, Uint8ClampedArray or Buffer expected.");
+        throw new Error('Image data: Uint8Array, Uint8ClampedArray or Buffer expected.');
     }
     if (imgWidth < subImgWidth) {
-        throw new Error("Subimage is larger than base image");
+        throw new Error('Subimage is larger than base image');
     }
     if (imgChannels < subImgChannels) {
-        throw new Error("Subimage channels count not equal to image channels count");
+        throw new Error('Subimage channels count not equal to image channels count');
     }
-    const options = Object.assign({}, defaultOptions, optionsParam);
+    const options = { ...defaultOptions, ...optionsParam };
     const maxDelta = 35215 * options.threshold * options.threshold;
-    let subImgPos = 0;
+    const subImgPos = 0;
     let matchingTopRowStartX = 0;
     let matchingTopRowStartY = 0;
     for (let y = 0; y < imgHeight; y += 1) {
@@ -79,18 +96,4 @@ function subImageMatchOnCoordinates(img, subImg, matchY, matchX, maxDelta) {
         subImgY++;
     }
     return true;
-}
-function getChannelsCount(img) {
-    let channelsCount = 1;
-    if (img.data.length !== img.width * img.height
-        && img.data.length % (img.width * img.height) === 0) {
-        channelsCount = Math.round(img.data.length / (img.width * img.height));
-    }
-    return channelsCount;
-}
-function isPixelData(arr) {
-    return Buffer.isBuffer(arr) || arr.constructor === Uint8Array || arr.constructor === Uint8ClampedArray;
-}
-function posFromCoordinates(y, x, width, channels) {
-    return (y * width + x) * channels;
 }

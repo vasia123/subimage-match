@@ -17,5 +17,15 @@
     "ignorePatterns": [
         "**/dist/**"
     ],
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [
+                    ".js",
+                    ".ts",
+                ]
+            }
+        }
+    },
     "rules": {}
 }
