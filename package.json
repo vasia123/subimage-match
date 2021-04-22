@@ -2,7 +2,8 @@
     "name": "matches-subimage",
     "version": "1.0.0",
     "description": "Lightweight library that finds matches of an image within another image",
-    "main": "index.js",
+    "main": "dist/src/index.js",
+    "types": "dist/src/index.d.ts",
     "scripts": {
         "compile": "tsc --declaration",
         "watch": "tsc -w",
