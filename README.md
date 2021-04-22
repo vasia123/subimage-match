@@ -3,9 +3,18 @@
 Lightweight library that finds matches of an image within another image, perfect for visual validation in testing scenarios.
 Heavily inspired by (read: blatantly copied some subroutines from) [pixelmatch](https://github.com/mapbox/pixelmatch), and just like [pixelmatch](https://github.com/mapbox/pixelmatch), its advantages are that it's fast and lightweight, with zero dependencies.
 
-Usage demo:
-```js
-const foundMatch = subImageMatch(img, subImg);
+## Install
+
+Install with NPM:
+
+```bash
+npm install subimage-match
+```
+
+or yarn:
+
+```bash
+yarn add subimage-match
 ```
 
 ## API
@@ -31,19 +40,3 @@ const data = PNG.sync.read(fs.readFileSync("image.png"));
 const subImg = PNG.sync.read(fs.readFileSync("sub_image.png"));
 subImageMatch(img1, img2, {threshold: 0.1});
 ```
-
-## Install
-
-Install with NPM:
-
-```bash
-npm install subimage-match
-```
-
-or yarn:
-
-```bash
-yarn add subimage-match
-```
-
-## [Changelog](https://github.com/dieterwalckiers/subimage-match/releases)
