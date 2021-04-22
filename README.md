@@ -12,11 +12,11 @@ const foundMatch = subImageMatch(img, subImg);
 
 ### subImageMatch(img, subImg[, options])
 
-- `img1`, `img2` — Image data of the images to compare (`Buffer`, `Uint8Array` or `Uint8ClampedArray`).
+- `img1`, `img2` — Object contain image "data"(`Buffer`, `Uint8Array` or `Uint8ClampedArray`), "width" and "height".
 - `options` is an object literal with only one property currently:
     - `threshold` — Matching threshold, ranges from `0` to `1`. Smaller values make the comparison more sensitive. `0.1` by default.
 
-Returns a boolean indicating whether or not a match has been found
+Returns `false` if no match has been found, or object with found coordinates `{x: number, y: number}`
 
 ## Example usage
 
@@ -27,7 +27,7 @@ const fs = require("fs");
 const PNG = require("pngjs").PNG;
 const subImageMatch = require("subimage-match");
 
-const img = PNG.sync.read(fs.readFileSync("image.png"));
+const data = PNG.sync.read(fs.readFileSync("image.png"));
 const subImg = PNG.sync.read(fs.readFileSync("sub_image.png"));
 subImageMatch(img1, img2, {threshold: 0.1});
 ```
@@ -38,6 +38,12 @@ Install with NPM:
 
 ```bash
 npm install subimage-match
+```
+
+or yarn:
+
+```bash
+yarn add subimage-match
 ```
 
 ## [Changelog](https://github.com/dieterwalckiers/subimage-match/releases)

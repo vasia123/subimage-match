@@ -1,12 +1,25 @@
-const pixelMatches = require("./delta");
-module.exports = subImageMatch;
+import pixelMatches from "./delta";
 
 const defaultOptions = {
     threshold: 0.1,         // matching threshold (0 to 1); smaller is more sensitive
     // includeAA: false,       // whether to skip anti-aliasing detection. WIP (see pixelmatch package)
 };
 
-function subImageMatch(img, subImg, optionsParam) {
+interface inputImage {
+    data: Buffer | Uint8Array | Uint8ClampedArray
+    width: number
+    height: number
+}
+
+interface outputCoords {
+    x: number
+    y: number
+}
+
+
+export default function subImageMatch(
+    img: inputImage, 
+    subImg: inputImage, optionsParam?: typeof defaultOptions): boolean | outputCoords {
 
     const { data: imgData, width: imgWidth, height: imgHeight } = img;
     const { data: subImgData, width: subImgWidth } = subImg;
@@ -14,7 +27,7 @@ function subImageMatch(img, subImg, optionsParam) {
     if (!isPixelData(imgData) || !isPixelData(subImgData)) {
         throw new Error("Image data: Uint8Array, Uint8ClampedArray or Buffer expected.");
     }
-    if (img.length < subImg.length) {
+    if (imgWidth < subImgWidth) {
         throw new Error("Subimage is larger than base image");
     }
     const options = Object.assign({}, defaultOptions, optionsParam);
@@ -26,7 +39,7 @@ function subImageMatch(img, subImg, optionsParam) {
 
     for (let y = 0; y < imgHeight; y++) {
 
-        matchingTopRowX = 0; // restart finding top row mode when we hit a new row in the main img
+        let matchingTopRowX = 0; // restart finding top row mode when we hit a new row in the main img
         for (let x = 0; x < imgWidth; x++) {
 
             const imgPos = posFromCoordinates(y, x, imgWidth);
@@ -43,7 +56,7 @@ function subImageMatch(img, subImg, optionsParam) {
                 matchingTopRowX++;
                 if (matchingTopRowX === subImgWidth) {
                     if (subImageMatchOnCoordinates(img, subImg, matchingTopRowStartY, matchingTopRowStartX, maxDelta)) {
-                        return true;
+                        return { x: matchingTopRowStartX, y: matchingTopRowStartY };
                     }
                     x = matchingTopRowStartX; // put our search position x back to where the matching row began
                     matchingTopRowX = 0;
@@ -56,7 +69,8 @@ function subImageMatch(img, subImg, optionsParam) {
     return false;
 }
 
-function subImageMatchOnCoordinates(img, subImg, matchY, matchX, maxDelta) {
+export function subImageMatchOnCoordinates(
+    img: inputImage, subImg: inputImage, matchY: number, matchX: number, maxDelta: number) {
     const { data: imgData, width: imgWidth } = img;
     const { data: subImgData, width: subImgWidth, height: subImgHeight } = subImg;
     let subImgX = 0;
@@ -68,7 +82,7 @@ function subImageMatchOnCoordinates(img, subImg, matchY, matchX, maxDelta) {
 
             const imgPos = posFromCoordinates(imgY, imgX, imgWidth);
             const subImgPos = posFromCoordinates(subImgY, subImgX, subImgWidth);
-            const matches = pixelMatches(imgData, subImgData, imgPos, subImgPos, maxDelta, undefined, imgY === 5);
+            const matches = pixelMatches(imgData, subImgData, imgPos, subImgPos, maxDelta, imgY === 5);
             if (!matches) {
                 return false;
             }
@@ -79,11 +93,10 @@ function subImageMatchOnCoordinates(img, subImg, matchY, matchX, maxDelta) {
     return true;
 }
 
-function isPixelData(arr) {
-    // work around instanceof Uint8Array not working properly in some Jest environments
-    return ArrayBuffer.isView(arr) && arr.constructor.BYTES_PER_ELEMENT === 1;
+function isPixelData(arr: Buffer | Uint8Array | Uint8ClampedArray) {
+    return Buffer.isBuffer(arr) || arr.constructor === Uint8Array ||  arr.constructor === Uint8ClampedArray;
 }
 
-function posFromCoordinates(y, x, width) {
+function posFromCoordinates(y: number, x: number, width: number) {
     return (y * width + x) * 4;
 }
